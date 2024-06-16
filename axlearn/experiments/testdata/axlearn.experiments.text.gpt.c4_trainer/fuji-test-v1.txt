@@ -11,7 +11,7 @@ checkpointer.save_policy.min_step: 1
 checkpointer.save_policy.n: 500
 checkpointer.storage.klass: 'axlearn.common.checkpointer.TensorStoreStateStorage'
 checkpointer.storage.timeout_secs: 3600
-checkpointer.orbax_checkpointer.klass = 'axlearn.common.checkpointer.OrbaxCheckpointer'
+checkpointer.orbax_checkpointer.klass = 'axlearn.common.orbax_checkpointer.OrbaxCheckpointer'
 checkpointer.orbax_checkpointer.enable_checkpointing: True
 checkpointer.orbax_checkpointer.use_async: True
 checkpointer.orbax_checkpointer.save_interval_steps: 10
