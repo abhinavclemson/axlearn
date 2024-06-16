@@ -29,6 +29,7 @@ class OrbaxCheckpointer(Configurable):
     def __init__(self, cfg: Config):
         super().__init__(cfg)
         self._cfg = cfg
+        self.enable_checkpointing = cfg.enable_checkpointing
         item_names = ("items",)
         self._manager = None
         if cfg.enable_checkpointing:
