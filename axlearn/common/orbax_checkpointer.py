@@ -16,7 +16,7 @@ class OrbaxCheckpointer(Configurable):
     class Config(Configurable.Config):
         """Configures Checkpointer."""
 
-        dir: Optional[str] = None  # The output directory.
+        dir: Optional[str] = ""  # The output directory.
 
         max_to_keep: Optional[int] = None
 
