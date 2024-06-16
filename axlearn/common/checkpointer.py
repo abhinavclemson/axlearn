@@ -614,7 +614,6 @@ class Checkpointer(Module):
         self._within_context = False
         self._save_policy: CheckpointPolicy = cfg.save_policy.instantiate()
         self._orbax_checkpointer: OrbaxCheckpointer.Config = cfg.orbax_checkpointer.instantiate()
-        self._orbax_checkpointer.dir = cfg.dir
         if cfg.summary_writer is not None:
             cfg.summary_writer.dir = cfg.summary_writer.dir or cfg.dir
             self._add_child("summary_writer", cfg.summary_writer)
@@ -673,6 +672,8 @@ class Checkpointer(Module):
     ):
         """Saves `state` at the given `step` according to the configured checkpoint policy."""
         if self._orbax_checkpointer.enable_checkpointing:
+            cfg: Checkpointer.Config = self.config
+            self._orbax_checkpointer.dir = cfg.dir
             self._orbax_checkpointer.save(step, state)
         else:
             if not self._save_policy(step=step, evaler_summaries=(evaler_summaries or {})):

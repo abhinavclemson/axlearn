@@ -26,7 +26,7 @@ class OrbaxCheckpointer(Configurable):
 
         use_async: Optional[bool] = True
 
-    def __init__(self, *, cfg: Config):
+    def __init__(self, cfg: Config):
         super().__init__(cfg)
         self._cfg = cfg
         item_names = ("items",)
