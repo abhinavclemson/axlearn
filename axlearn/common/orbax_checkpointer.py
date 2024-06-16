@@ -1,8 +1,9 @@
 """Orbax Checkpointer"""
-from typing import Optional, Required
+from typing import Optional
 from absl import logging
 from axlearn.common.config import (
     REQUIRED,
+    Required,
     Configurable,
     config_class,
 )
