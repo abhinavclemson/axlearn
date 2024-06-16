@@ -46,7 +46,7 @@ from axlearn.common.module import (
 )
 from axlearn.common.summary_writer import CheckpointerAction, SummaryWriter
 from axlearn.common.utils import NestedTensor, NestedTensorSpec, Tensor, TensorSpec, set_recursively
-
+from orbax_checkpointer import OrbaxCheckpointer
 
 class CheckpointValidationType(str, enum.Enum):
     """Represents a type of checkpoint validation.
@@ -604,6 +604,8 @@ class Checkpointer(Module):
         # A config that instantiates an optional SummaryWriter, and is used to log checkpoints.
         summary_writer: Optional[SummaryWriter.Config] = None
 
+        orbax_checkpointer: Optional[OrbaxCheckpointer.Config] = OrbaxCheckpointer.default_config()
+
     def __init__(self, cfg: Config, *, parent: Optional[Module]):
         super().__init__(cfg, parent=parent)
         self._storage: StateStorage = cfg.storage.instantiate()
@@ -611,6 +613,8 @@ class Checkpointer(Module):
         self._gc_thread = None
         self._within_context = False
         self._save_policy: CheckpointPolicy = cfg.save_policy.instantiate()
+        self._orbax_checkpointer: OrbaxCheckpointer.Config = cfg.orbax_checkpointer.instantiate()
+        self._orbax_checkpointer.dir = cfg.dir
         if cfg.summary_writer is not None:
             cfg.summary_writer.dir = cfg.summary_writer.dir or cfg.dir
             self._add_child("summary_writer", cfg.summary_writer)
@@ -668,27 +672,30 @@ class Checkpointer(Module):
         self, *, step: int, state: NestedTensor, evaler_summaries: Optional[Dict[str, Any]] = None
     ):
         """Saves `state` at the given `step` according to the configured checkpoint policy."""
-        if not self._save_policy(step=step, evaler_summaries=(evaler_summaries or {})):
-            return
-        if step < 0 or step >= 10**8:
-            raise ValueError(f"Out-of-range: {step}")
-        ckpt_dir = self.ckpt_dir(step)
-        start_time = time.perf_counter()
-        _cleanup_checkpoint(ckpt_dir)
-        self._storage.save_to_dir(
-            step=step, state=state, ckpt_dir=ckpt_dir, on_commit_callback=write_index_file
-        )
-        end_time = time.perf_counter()
-        if "summary_writer" in self.children:
-            self.summary_writer.log_checkpoint(
-                step=step,
-                state=state,
-                ckpt_dir=ckpt_dir,
-                action=CheckpointerAction.SAVE,
+        if self._orbax_checkpointer.enable_checkpointing:
+            self._orbax_checkpointer.save(step, state)
+        else:
+            if not self._save_policy(step=step, evaler_summaries=(evaler_summaries or {})):
+                return
+            if step < 0 or step >= 10**8:
+                raise ValueError(f"Out-of-range: {step}")
+            ckpt_dir = self.ckpt_dir(step)
+            start_time = time.perf_counter()
+            _cleanup_checkpoint(ckpt_dir)
+            self._storage.save_to_dir(
+                step=step, state=state, ckpt_dir=ckpt_dir, on_commit_callback=write_index_file
             )
-        logging.info(
-            "Saved checkpoint with %s in %s seconds", type(self._storage), end_time - start_time
-        )
+            end_time = time.perf_counter()
+            if "summary_writer" in self.children:
+                self.summary_writer.log_checkpoint(
+                    step=step,
+                    state=state,
+                    ckpt_dir=ckpt_dir,
+                    action=CheckpointerAction.SAVE,
+                )
+            logging.info(
+                "Saved checkpoint with %s in %s seconds", type(self._storage), end_time - start_time
+            )
 
     def run_garbage_collection(self):
         """Runs one round of garbage collection of past checkpoints.
