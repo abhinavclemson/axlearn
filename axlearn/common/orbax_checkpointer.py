@@ -37,7 +37,7 @@ class OrbaxCheckpointer(Configurable):
                     create=True,
                     enable_async_checkpointing=cfg.use_async,
                 )
-    
+
             if cfg.max_to_keep:
                 options.max_to_keep = cfg.max_to_keep
             if cfg.save_interval_steps:

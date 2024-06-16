@@ -46,7 +46,7 @@ from axlearn.common.module import (
 )
 from axlearn.common.summary_writer import CheckpointerAction, SummaryWriter
 from axlearn.common.utils import NestedTensor, NestedTensorSpec, Tensor, TensorSpec, set_recursively
-from orbax_checkpointer import OrbaxCheckpointer
+from axlearn.common.orbax_checkpointer import OrbaxCheckpointer
 
 class CheckpointValidationType(str, enum.Enum):
     """Represents a type of checkpoint validation.
