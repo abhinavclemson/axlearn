@@ -604,7 +604,7 @@ class Checkpointer(Module):
         # A config that instantiates an optional SummaryWriter, and is used to log checkpoints.
         summary_writer: Optional[SummaryWriter.Config] = None
 
-        orbax_checkpointer: Optional[OrbaxCheckpointer.Config] = OrbaxCheckpointer.default_config()
+        orbax_checkpointer: Optional[OrbaxCheckpointer.Config] = None
 
     def __init__(self, cfg: Config, *, parent: Optional[Module]):
         super().__init__(cfg, parent=parent)
@@ -613,7 +613,10 @@ class Checkpointer(Module):
         self._gc_thread = None
         self._within_context = False
         self._save_policy: CheckpointPolicy = cfg.save_policy.instantiate()
-        self._orbax_checkpointer: OrbaxCheckpointer.Config = cfg.orbax_checkpointer.instantiate()
+        self._orbax_checkpointer = OrbaxCheckpointer.default_config()
+        if cfg.orbax_checkpointer:
+            logging.info("Orbax Config was provided: {cfg.orbax_checkpointer}")
+            self._orbax_checkpointer: OrbaxCheckpointer.Config = cfg.orbax_checkpointer.instantiate()
         if cfg.summary_writer is not None:
             cfg.summary_writer.dir = cfg.summary_writer.dir or cfg.dir
             self._add_child("summary_writer", cfg.summary_writer)
