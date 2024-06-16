@@ -2,8 +2,6 @@
 from typing import Optional
 from absl import logging
 from axlearn.common.config import (
-    REQUIRED,
-    Required,
     Configurable,
     config_class,
 )
@@ -18,7 +16,7 @@ class OrbaxCheckpointer(Configurable):
     class Config(Configurable.Config):
         """Configures Checkpointer."""
 
-        dir: Required[str] = REQUIRED  # The output directory.
+        dir: Optional[str] = None  # The output directory.
 
         max_to_keep: Optional[int] = None
 
