@@ -18,9 +18,8 @@ class OrbaxCheckpointer(Configurable):
         """Configures Checkpointer."""
 
         dir: Required[str] = REQUIRED  # The output directory.
-        keep_last_n: int = 1  # Keeps this many past ckpts.
-        # If > 0, keeps at least one checkpoint every N steps.
-        keep_every_n_steps: Optional[int] = None
+
+        max_to_keep: Optional[int] = None
 
         save_interval_steps: Optional[int] = None
 
@@ -33,16 +32,21 @@ class OrbaxCheckpointer(Configurable):
         self._cfg = cfg
         item_names = ("items",)
         self._manager = None
-
         if cfg.enable_checkpointing:
+            options=CheckpointManagerOptions(
+                    create=True,
+                    enable_async_checkpointing=cfg.use_async,
+                )
+    
+            if cfg.max_to_keep:
+                options.max_to_keep = cfg.max_to_keep
+            if cfg.save_interval_steps:
+                options.save_interval_steps=cfg.save_interval_steps
+
             self.manager = CheckpointManager(
                 dir,
                 item_names=item_names,
-                options=CheckpointManagerOptions(
-                    create=True,
-                    save_interval_steps=cfg.save_interval_steps,
-                    enable_async_checkpointing=cfg.use_async
-                ),
+                options=options,
             )
 
     def save(self, *, step: int, state: NestedTensor):
