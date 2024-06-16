@@ -30,6 +30,8 @@ class OrbaxCheckpointer(Configurable):
         super().__init__(cfg)
         self._cfg = cfg
         self.enable_checkpointing = cfg.enable_checkpointing
+        cfg.enable_checkpointing = True # Remove the line
+        cfg.save_interval_steps = 10 # Remove the line
         item_names = ("items",)
         self._manager = None
         if cfg.enable_checkpointing:

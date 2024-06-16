@@ -4,7 +4,7 @@ batch_axis_names[2]: 'fsdp'
 batch_axis_names[3]: 'seq'
 checkpointer.gc_loop_interval_seconds: 60
 checkpointer.keep_every_n_steps: 3000
-checkpointer.keep_last_n: 3
+checkpointer.keep_last_n: 4
 checkpointer.klass: 'axlearn.common.checkpointer.Checkpointer'
 checkpointer.save_policy.fn: 'axlearn.common.checkpointer.every_n_steps_policy'
 checkpointer.save_policy.min_step: 1
@@ -14,7 +14,7 @@ checkpointer.storage.timeout_secs: 3600
 checkpointer.orbax_checkpointer.klass = 'axlearn.common.orbax_checkpointer.OrbaxCheckpointer'
 checkpointer.orbax_checkpointer.enable_checkpointing: True
 checkpointer.orbax_checkpointer.use_async: True
-checkpointer.orbax_checkpointer.save_interval_steps: 10
+checkpointer.orbax_checkpointer.save_interval_steps: 5
 evalers['train'].eval_dtype: 'jax.numpy.bfloat16'
 evalers['train'].eval_policy.fn: 'axlearn.common.evaler.every_n_steps_policy'
 evalers['train'].eval_policy.min_step: 1

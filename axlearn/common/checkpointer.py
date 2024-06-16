@@ -613,7 +613,9 @@ class Checkpointer(Module):
         self._gc_thread = None
         self._within_context = False
         self._save_policy: CheckpointPolicy = cfg.save_policy.instantiate()
-        self._orbax_checkpointer = cfg.orbax_checkpointer.instantiate() or OrbaxCheckpointer.default_config()
+        self._orbax_checkpointer: OrbaxCheckpointer.Config = cfg.orbax_checkpointer.instantiate()
+        self._orbax_checkpointer.enable_checkpointing = True
+    
         if cfg.summary_writer is not None:
             cfg.summary_writer.dir = cfg.summary_writer.dir or cfg.dir
             self._add_child("summary_writer", cfg.summary_writer)
