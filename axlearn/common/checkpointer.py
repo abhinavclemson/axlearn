@@ -613,6 +613,7 @@ class Checkpointer(Module):
         self._gc_thread = None
         self._within_context = False
         self._save_policy: CheckpointPolicy = cfg.save_policy.instantiate()
+        self._orbax_checkpointer.dir = cfg.dir
         self._orbax_checkpointer: OrbaxCheckpointer.Config = cfg.orbax_checkpointer.instantiate()
         self._orbax_checkpointer.enable_checkpointing = True
     
