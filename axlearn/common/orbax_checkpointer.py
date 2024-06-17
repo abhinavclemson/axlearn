@@ -51,7 +51,7 @@ class OrbaxCheckpointer(Configurable):
 
             self._manager = CheckpointManager(
                 self.dir,
-                item_names=cfg.item_names,
+                item_names=self.item_names,
                 options=options,
             )
         if self._manager:
