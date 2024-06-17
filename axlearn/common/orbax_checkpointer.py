@@ -30,10 +30,14 @@ class OrbaxCheckpointer(Configurable):
         super().__init__(cfg)
         self._cfg = cfg
         self.enable_checkpointing = cfg.enable_checkpointing
+        self.dir = cfg.dir
         cfg.enable_checkpointing = True # Remove the line
         cfg.save_interval_steps = 10 # Remove the line
-        item_names = ("items",)
+        self.item_names = ("items",)
         self._manager = None
+
+    def setup(self):
+        cfg = self._cfg
         if cfg.enable_checkpointing:
             options=CheckpointManagerOptions(
                     create=True,
@@ -45,11 +49,15 @@ class OrbaxCheckpointer(Configurable):
             if cfg.save_interval_steps:
                 options.save_interval_steps=cfg.save_interval_steps
 
-            self.manager = CheckpointManager(
-                dir,
-                item_names=item_names,
+            self._manager = CheckpointManager(
+                self.dir,
+                item_names=cfg.item_names,
                 options=options,
             )
+        if self._manager:
+            return True
+        return False
+
 
     def save(self, *, step: int, state: NestedTensor):
         if self._manager:

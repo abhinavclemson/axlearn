@@ -612,11 +612,15 @@ class Checkpointer(Module):
         self._gc_stopping = None
         self._gc_thread = None
         self._within_context = False
-        self._save_policy: CheckpointPolicy = cfg.save_policy.instantiate()
-        self._orbax_checkpointer.dir = cfg.dir
         self._orbax_checkpointer: OrbaxCheckpointer.Config = cfg.orbax_checkpointer.instantiate()
         self._orbax_checkpointer.enable_checkpointing = True
-    
+        if self._orbax_checkpointer.enable_checkpointing:
+            self._orbax_checkpointer.dir = cfg.dir
+            if self._orbax_checkpointer.setup():
+                logging.info("Orbax logger was setup successfully.")
+            else:
+                logging.info("Orbax logger setup Failed.")
+
         if cfg.summary_writer is not None:
             cfg.summary_writer.dir = cfg.summary_writer.dir or cfg.dir
             self._add_child("summary_writer", cfg.summary_writer)
