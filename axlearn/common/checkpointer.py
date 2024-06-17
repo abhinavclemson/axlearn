@@ -681,7 +681,7 @@ class Checkpointer(Module):
         if self._orbax_checkpointer.enable_checkpointing:
             cfg: Checkpointer.Config = self.config
             self._orbax_checkpointer.dir = cfg.dir
-            self._orbax_checkpointer.save(step, state)
+            self._orbax_checkpointer.save(step=step, state=state)
         else:
             if not self._save_policy(step=step, evaler_summaries=(evaler_summaries or {})):
                 return

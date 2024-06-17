@@ -1,11 +1,11 @@
 """Orbax Checkpointer"""
-from typing import Optional
+from typing import Optional, Union
 from absl import logging
 from axlearn.common.config import (
     Configurable,
     config_class,
 )
-from axlearn.common.utils import NestedTensor
+from axlearn.common.utils import NestedTensor, NestedTensorSpec
 from orbax.checkpoint.checkpoint_manager import CheckpointManager, CheckpointManagerOptions
 import orbax.checkpoint as ocp
 
@@ -59,7 +59,7 @@ class OrbaxCheckpointer(Configurable):
         return False
 
 
-    def save(self, *, step: int, state: NestedTensor):
+    def save(self, step: int, state: Union[NestedTensor, NestedTensorSpec]):
         if self._manager:
             logging.info("Starting Orbax save operation on step: {step}")
             self._manager.save(
