@@ -49,7 +49,6 @@ apple-silicon = [
 
 # Requirements for testing and development.
 dev = [
-    "orbax-checkpoint",
     "black==23.1a1",  # formatting
     "diffusers==0.26.3", # diffuser dependency for golden config updates
     "einops",
